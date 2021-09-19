@@ -1,4 +1,4 @@
-// variables
+// todos variables
 var todoForm = document.getElementById("todo-form");
 var todoList = document.getElementById("todos");
 var doneList = document.getElementById("dones");
@@ -10,27 +10,66 @@ var editInputDescriptionModal = document.getElementById('edit-input-description-
 var todoSelectDifficultyModal = document.getElementById("inputGroupSelectDifficulty-modal");
 var editModal = document.getElementById("edit-modal");
 var currentId;
+// users variables
+var username = document.getElementById("username");
+var password = document.getElementById("password");
+var currentApi;
 
-window.onload = async() => {
-    const todos = await getTodos();
-    todos.forEach(todo => {
-        var todoItem = `
-            <div class="border border-1 shadow-sm p-3 mb-3 rounded todo-item" data-id=${todo.id}>
-                <h4 class="mb-3 input-name">${todo.title}</h4>
-                <p class="mb-6 input-name">${todo.description}</p>
-                <h6 class="mb-6 input-name">${todo.difficulty}</h6>
-                <button type="button" class="btn btn-danger delete">Delete</button>
-                <button type="button" class="btn btn-success move-todo">${!todo.isCompleted ? "Move to Done" : "Move Back"}</button>
-                <button type="button" class="btn btn-warning edit" data-bs-toggle="modal"
-                    data-bs-target="#edit-modal">Edit</button>
-            </div>`;
-        if (!todo.isCompleted) {
-            todoList.innerHTML += todoItem;
-        } else {
-            doneList.innerHTML += todoItem;
-        }
-    });
-}
+document.addEventListener("click", async function(e) {
+    e.preventDefault();
+
+    if (e.target.matches("#signup")) {
+        await addUser(username.value, password.value);
+        return;
+    }
+    if (e.target.matches("#login")) {
+        console.log(username.value);
+        console.log(password.value);
+        console.log("login");
+        var apiKeyObj = await login(username.value, password.value);
+        currentApi = apiKeyObj.apiKey;
+        const todos = await getTodos(currentApi);
+        todos.forEach(todo => {
+            var todoItem = `
+                <div class="border border-1 shadow-sm p-3 mb-3 rounded todo-item" data-id=${todo.id}>
+                    <h4 class="mb-3 input-name">${todo.title}</h4>
+                    <p class="mb-6 input-name">${todo.description}</p>
+                    <h6 class="mb-6 input-name">${todo.difficulty}</h6>
+                    <button type="button" class="btn btn-danger delete">Delete</button>
+                    <button type="button" class="btn btn-success move-todo">${!todo.isCompleted ? "Move to Done" : "Move Back"}</button>
+                    <button type="button" class="btn btn-warning edit" data-bs-toggle="modal"
+                        data-bs-target="#edit-modal">Edit</button>
+                </div>`;
+            if (!todo.isCompleted) {
+                todoList.innerHTML += todoItem;
+            } else {
+                doneList.innerHTML += todoItem;
+            }
+        });
+        return;
+    }
+});
+
+// window.onload = async() => {
+//     const todos = await getTodos(currentApi);
+//     todos.forEach(todo => {
+//         var todoItem = `
+//             <div class="border border-1 shadow-sm p-3 mb-3 rounded todo-item" data-id=${todo.id}>
+//                 <h4 class="mb-3 input-name">${todo.title}</h4>
+//                 <p class="mb-6 input-name">${todo.description}</p>
+//                 <h6 class="mb-6 input-name">${todo.difficulty}</h6>
+//                 <button type="button" class="btn btn-danger delete">Delete</button>
+//                 <button type="button" class="btn btn-success move-todo">${!todo.isCompleted ? "Move to Done" : "Move Back"}</button>
+//                 <button type="button" class="btn btn-warning edit" data-bs-toggle="modal"
+//                     data-bs-target="#edit-modal">Edit</button>
+//             </div>`;
+//         if (!todo.isCompleted) {
+//             todoList.innerHTML += todoItem;
+//         } else {
+//             doneList.innerHTML += todoItem;
+//         }
+//     });
+// }
 
 todoForm.addEventListener("submit", async function(e) {
     e.preventDefault();
